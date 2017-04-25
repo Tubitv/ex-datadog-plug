@@ -3,7 +3,7 @@ defmodule ExDatadogPlug.Mixfile do
   @version File.cwd!() |> Path.join("version") |> File.read! |> String.trim
 
   def project do
-    [app: :pre_commit_hook,
+    [app: :ex_datadog_plug,
      version: @version,
      elixir: "~> 1.4",
      description: description(),
