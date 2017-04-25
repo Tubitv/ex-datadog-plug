@@ -3,14 +3,26 @@ defmodule ExDatadogPlug.Mixfile do
   @version File.cwd!() |> Path.join("version") |> File.read! |> String.trim
 
   def project do
-    [app: :ex_datadog_plug,
-     version: @version,
-     elixir: "~> 1.4",
-     description: description(),
-     package: package(),
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :ex_datadog_plug,
+      version: @version,
+      elixir: "~> 1.4",
+      description: description(),
+      package: package(),
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps: deps(),
+
+      # exdocs
+      # Docs
+      name: "ExDatadogPlug",
+      source_url: "https://github.com/adRise/ex_datadog_plug",
+      homepage_url: "https://github.com/adRise/ex_datadog_plug",
+      docs: [
+        main: "ExDatadog.Plug",
+        extras: ["README.md"]
+      ]
+   ]
   end
 
   def application do
