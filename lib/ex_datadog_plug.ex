@@ -49,7 +49,7 @@ defmodule ExDatadog.Plug do
       |> Enum.concat(gen_query_tags(conn.query_string, query_list))
   end
 
-  defp gen_route_tags(path_info, %{}), do: [join_path(path_info, "route")]
+  defp gen_route_tags(path_info, path_params) when path_params == %{}, do: [join_path(path_info, "route")]
   defp gen_route_tags(path_info, path_params) do
     reversed_params = Enum.reduce(path_params, %{}, fn {k, v}, acc -> Map.put(acc, v, k) end)
     path_info
