@@ -18,6 +18,7 @@ defmodule ExDatadog.Plug do
   """
 
   alias Plug.Conn
+  alias Plug.Conn.Query
   @behaviour Plug
 
   def init(opts) do
@@ -66,13 +67,13 @@ defmodule ExDatadog.Plug do
   defp gen_query_tags(_query_string, nil), do: []
   defp gen_query_tags(query_string, query_list) do
     query = query_string
-      |> Plug.Conn.Query.decode
+      |> Query.decode
       |> Enum.map(fn {k, v} -> {k, "#{k}:#{v}"} end)
       |> Enum.into(%{})
 
     case query_list do
       []    -> Map.values(query)
-      _     -> Enum.filter_map(query, fn {k, _} -> k in query_list end, fn {_, v} -> v end)
+      _     -> query |> Enum.filter(fn {k, _} -> k in query_list end) |> Enum.map(fn {_, v} -> v end)
     end
 
   end
