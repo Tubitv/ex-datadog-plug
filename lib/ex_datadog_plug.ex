@@ -42,12 +42,14 @@ defmodule ExDatadog.Plug do
     include_method? = Keyword.get(opts, :method, false)
     include_path? = Keyword.get(opts, :path, false)
     query_list = Keyword.get(opts, :query, nil)
+    static_tags = Keyword.get(opts, :tags, [])
 
     conn.path_info
       |> gen_route_tags(conn.path_params)
       |> Enum.concat(gen_path_tags(conn.path_info, include_path?))
       |> Enum.concat(gen_method_tags(conn.method, include_method?))
       |> Enum.concat(gen_query_tags(conn.query_string, query_list))
+      |> Enum.concat(static_tags)
   end
 
   defp gen_route_tags(path_info, path_params) when path_params == %{}, do: [join_path(path_info, "route")]

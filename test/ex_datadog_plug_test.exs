@@ -40,4 +40,14 @@ defmodule ExDatadogPlugTest do
     assert called ExStatsD.histogram(:_, "hello.response_time",
       tags: ["route:/", "path:/", "PATCH", "args:a,b,1,2", "bar:10", "foo:abcd"])
   end
+
+  test_with_mock "check static tags correctness", ExStatsD, [histogram: fn(_, _, _) -> :ok end] do
+    :patch
+      |> conn("/")
+      |> ExDatadog.Plug.call(method: false, path: false, prefix: "hello", query: [], tags: ["version:v1"])
+      |> send_resp(200, "Hello world")
+
+    assert called ExStatsD.histogram(:_, "hello.response_time",
+      tags: ["route:/", "version:v1"])
+  end
 end
