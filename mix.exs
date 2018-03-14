@@ -16,8 +16,8 @@ defmodule ExDatadogPlug.Mixfile do
       # exdocs
       # Docs
       name: "ExDatadogPlug",
-      source_url: "https://github.com/adRise/ex_datadog_plug",
-      homepage_url: "https://github.com/adRise/ex_datadog_plug",
+      source_url: "https://github.com/Tubitv/ex_datadog_plug",
+      homepage_url: "https://github.com/Tubitv/ex_datadog_plug",
       docs: [
         main: "ExDatadog.Plug",
         extras: ["README.md"]
@@ -53,8 +53,8 @@ defmodule ExDatadogPlug.Mixfile do
       files: ["lib", "mix.exs", "README*", "LICENSE*", "version"],
       licenses: ["MIT"],
       maintainers: ["tyr.chen@gmail.com"],
-      links: %{"GitHub" => "https://github.com/adRise/ex_datadog_plug",
-              "Docs" => "http://adrise.github.io/ex_datadog_plug/"},
+      links: %{"GitHub" => "https://github.com/Tubitv/ex_datadog_plug",
+              "Docs" => "https://hexdocs.pm/ex_datadog_plug"},
     ]
   end
 end
