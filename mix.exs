@@ -31,8 +31,8 @@ defmodule ExDatadogPlug.Mixfile do
 
   defp deps do
     [
-      {:ex_statsd, ">= 0.5.3"},
-      {:plug, "~> 1.4.3"},
+      {:ex_statsd, "~> 0.5"},
+      {:plug, "~> 1.5"},
 
       # dev & test
       {:credo, "~> 0.8", only: [:dev, :test]},
