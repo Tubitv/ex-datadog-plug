@@ -17,8 +17,11 @@ defmodule ExDatadog.Plug do
       Default is `nil` (do not generate tag for query string)
   """
 
+  alias ExDatadog.Plug.Statix
+
   alias Plug.Conn
   alias Plug.Conn.Query
+
   @behaviour Plug
 
   def init(opts) do
@@ -33,7 +36,7 @@ defmodule ExDatadog.Plug do
       stop = System.monotonic_time()
       diff = System.convert_time_unit(stop - start, :native, :milli_seconds)
 
-      ExStatsD.histogram(diff, prefix <> ".response_time",  tags: gen_tags(conn, opts))
+      Statix.histogram(prefix <> ".response_time", diff, tags: gen_tags(conn, opts))
       conn
     end)
   end
@@ -45,19 +48,22 @@ defmodule ExDatadog.Plug do
     static_tags = Keyword.get(opts, :tags, [])
 
     conn.path_info
-      |> gen_route_tags(conn.path_params)
-      |> Enum.concat(gen_path_tags(conn.path_info, include_path?))
-      |> Enum.concat(gen_method_tags(conn.method, include_method?))
-      |> Enum.concat(gen_query_tags(conn.query_string, query_list))
-      |> Enum.concat(static_tags)
+    |> gen_route_tags(conn.path_params)
+    |> Enum.concat(gen_path_tags(conn.path_info, include_path?))
+    |> Enum.concat(gen_method_tags(conn.method, include_method?))
+    |> Enum.concat(gen_query_tags(conn.query_string, query_list))
+    |> Enum.concat(static_tags)
   end
 
-  defp gen_route_tags(path_info, path_params) when path_params == %{}, do: [join_path(path_info, "route")]
+  defp gen_route_tags(path_info, path_params) when path_params == %{},
+    do: [join_path(path_info, "route")]
+
   defp gen_route_tags(path_info, path_params) do
     reversed_params = Enum.reduce(path_params, %{}, fn {k, v}, acc -> Map.put(acc, v, k) end)
+
     path_info
-      |> Enum.map(fn v -> Map.get(reversed_params, v) || v end)
-      |> gen_route_tags(%{})
+    |> Enum.map(fn v -> Map.get(reversed_params, v) || v end)
+    |> gen_route_tags(%{})
   end
 
   defp gen_path_tags(_path_info, false), do: []
@@ -67,17 +73,18 @@ defmodule ExDatadog.Plug do
   defp gen_method_tags(method, true), do: [method]
 
   defp gen_query_tags(_query_string, nil), do: []
+
   defp gen_query_tags(query_string, query_list) do
-    query = query_string
-      |> Query.decode
+    query =
+      query_string
+      |> Query.decode()
       |> Enum.map(fn {k, v} -> {k, "#{k}:#{v}"} end)
       |> Enum.into(%{})
 
     case query_list do
-      []    -> Map.values(query)
-      _     -> query |> Enum.filter(fn {k, _} -> k in query_list end) |> Enum.map(fn {_, v} -> v end)
+      [] -> Map.values(query)
+      _ -> query |> Enum.filter(fn {k, _} -> k in query_list end) |> Enum.map(fn {_, v} -> v end)
     end
-
   end
 
   defp join_path(path_info, prefix), do: "#{prefix}:/#{Enum.join(path_info, "/")}"
