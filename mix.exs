@@ -1,6 +1,6 @@
 defmodule ExDatadogPlug.Mixfile do
   use Mix.Project
-  @version File.cwd!() |> Path.join("version") |> File.read! |> String.trim
+  @version File.cwd!() |> Path.join("version") |> File.read!() |> String.trim()
 
   def project do
     [
@@ -9,8 +9,8 @@ defmodule ExDatadogPlug.Mixfile do
       elixir: "~> 1.4",
       description: description(),
       package: package(),
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
 
       # exdocs
@@ -22,7 +22,7 @@ defmodule ExDatadogPlug.Mixfile do
         main: "ExDatadog.Plug",
         extras: ["README.md"]
       ]
-   ]
+    ]
   end
 
   def application do
@@ -31,14 +31,14 @@ defmodule ExDatadogPlug.Mixfile do
 
   defp deps do
     [
-      {:ex_statsd, "~> 0.5"},
+      {:statix, "> 0.0.0"},
       {:plug, "~> 1.5"},
 
       # dev & test
       {:credo, "~> 0.8", only: [:dev, :test]},
       {:ex_doc, "~> 0.18.1", only: [:dev, :test]},
       {:mock, "~> 0.2.1", only: :test},
-      {:pre_commit_hook, "~> 1.0.6", only: [:dev]},
+      {:pre_commit_hook, "~> 1.0.6", only: [:dev]}
     ]
   end
 
@@ -53,8 +53,10 @@ defmodule ExDatadogPlug.Mixfile do
       files: ["lib", "mix.exs", "README*", "LICENSE*", "version"],
       licenses: ["MIT"],
       maintainers: ["tyr.chen@gmail.com"],
-      links: %{"GitHub" => "https://github.com/Tubitv/ex_datadog_plug",
-              "Docs" => "https://hexdocs.pm/ex_datadog_plug"},
+      links: %{
+        "GitHub" => "https://github.com/Tubitv/ex_datadog_plug",
+        "Docs" => "https://hexdocs.pm/ex_datadog_plug"
+      }
     ]
   end
 end
