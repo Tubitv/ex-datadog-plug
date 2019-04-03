@@ -15,6 +15,7 @@ defmodule ExDatadog.Plug do
     * `:query` - a list of strings to include specific query string in the tag list. `[]` will generate all query
       params as tags.
       Default is `nil` (do not generate tag for query string)
+    * `:statix_module` - a module value
   """
 
   alias ExDatadog.Plug.Statix
@@ -31,12 +32,13 @@ defmodule ExDatadog.Plug do
   def call(conn, opts) do
     prefix = Keyword.get(opts, :prefix, "plug")
     start = System.monotonic_time()
+    module = Keyword.get(opts, :statix_module, Statix)
 
     Conn.register_before_send(conn, fn conn ->
       stop = System.monotonic_time()
       diff = System.convert_time_unit(stop - start, :native, :milli_seconds)
 
-      Statix.histogram(prefix <> ".response_time", diff, tags: gen_tags(conn, opts))
+      module.histogram(prefix <> ".response_time", diff, tags: gen_tags(conn, opts))
       conn
     end)
   end
