@@ -36,7 +36,7 @@ defmodule ExDatadogPlug.Mixfile do
 
       # dev & test
       {:credo, "~> 0.8", only: [:dev, :test]},
-      {:ex_doc, "~> 0.18.1", only: [:dev, :test]},
+      {:ex_doc, "~> 0.20", only: [:dev, :test]},
       {:mock, "~> 0.2.1", only: :test},
       {:pre_commit_hook, "~> 1.0.6", only: [:dev]}
     ]
