@@ -36,13 +36,14 @@ defmodule ExDatadog.Plug do
 
     Conn.register_before_send(conn, fn conn ->
       stop = System.monotonic_time()
-      diff = System.convert_time_unit(stop - start, :native, :milli_seconds)
+      diff = System.convert_time_unit(stop - start, :native, :millisecond)
 
       module.histogram(prefix <> ".response_time", diff, tags: gen_tags(conn, opts))
       conn
     end)
   end
 
+  @doc false
   defp gen_tags(conn, opts) do
     include_method? = Keyword.get(opts, :method, false)
     include_path? = Keyword.get(opts, :path, false)
@@ -57,6 +58,7 @@ defmodule ExDatadog.Plug do
     |> Enum.concat(static_tags)
   end
 
+  @doc false
   defp gen_route_tags(path_info, path_params) when path_params == %{},
     do: [join_path(path_info, "route")]
 
@@ -68,12 +70,15 @@ defmodule ExDatadog.Plug do
     |> gen_route_tags(%{})
   end
 
+  @doc false
   defp gen_path_tags(_path_info, false), do: []
   defp gen_path_tags(path_info, true), do: [join_path(path_info, "path")]
 
+  @doc false
   defp gen_method_tags(_method, false), do: []
   defp gen_method_tags(method, true), do: [method]
 
+  @doc false
   defp gen_query_tags(_query_string, nil), do: []
 
   defp gen_query_tags(query_string, query_list) do
@@ -89,5 +94,6 @@ defmodule ExDatadog.Plug do
     end
   end
 
+  @doc false
   defp join_path(path_info, prefix), do: "#{prefix}:/#{Enum.join(path_info, "/")}"
 end
