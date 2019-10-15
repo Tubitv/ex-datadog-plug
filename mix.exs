@@ -31,14 +31,13 @@ defmodule ExDatadogPlug.Mixfile do
 
   defp deps do
     [
-      {:statix, "> 0.0.0"},
-      {:plug, "~> 1.5"},
-
+      {:statix, "~> 1.2"},
+      {:plug, "~> 1.8"},
       # dev & test
-      {:credo, "~> 0.8", only: [:dev, :test]},
-      {:ex_doc, "~> 0.20", only: [:dev, :test]},
-      {:mock, "~> 0.2.1", only: :test},
-      {:pre_commit_hook, "~> 1.0.6", only: [:dev]}
+      {:credo, "~> 1.1", only: [:dev, :test]},
+      {:ex_doc, "~> 0.21", only: [:dev, :test]},
+      {:mock, "~> 0.3", only: :test},
+      {:pre_commit_hook, "~> 1.2", only: [:dev]}
     ]
   end
 
