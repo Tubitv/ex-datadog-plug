@@ -106,7 +106,7 @@ defmodule ExDatadog.Plug do
   defp gen_graphql_methods(_params, false), do: []
 
   defp gen_graphql_methods(params, _) do
-    case Map.get(params, "query")
+    case Map.get(params, "query") do
       nil ->
         []
 
