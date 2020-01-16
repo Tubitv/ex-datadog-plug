@@ -18,10 +18,9 @@ defmodule ExDatadog.Plug do
     * `:statix_module` - a module value
   """
 
-  alias ExDatadog.Plug.Statix
-
   alias Plug.Conn
   alias Plug.Conn.Query
+  alias ExDatadog.{Plug.Statix, QueryParser}
 
   @behaviour Plug
 
@@ -47,14 +46,22 @@ defmodule ExDatadog.Plug do
   defp gen_tags(conn, opts) do
     include_method? = Keyword.get(opts, :method, false)
     include_path? = Keyword.get(opts, :path, false)
+    include_graphql_methods? = Keyword.get(opts, :graphql_method, false)
     query_list = Keyword.get(opts, :query, nil)
     static_tags = Keyword.get(opts, :tags, [])
 
-    conn.path_info
+    path_info =
+      case conn.path_info do
+        [] -> conn.request_path |> String.trim_leading("/") |> String.split("/")
+        v -> v
+      end
+
+    path_info
     |> gen_route_tags(conn.path_params)
-    |> Enum.concat(gen_path_tags(conn.path_info, include_path?))
+    |> Enum.concat(gen_path_tags(path_info, include_path?))
     |> Enum.concat(gen_method_tags(conn.method, include_method?))
     |> Enum.concat(gen_query_tags(conn.query_string, query_list))
+    |> Enum.concat(gen_graphql_methods(conn.body_params, include_graphql_methods?))
     |> Enum.concat(static_tags)
   end
 
@@ -93,6 +100,26 @@ defmodule ExDatadog.Plug do
       _ -> query |> Enum.filter(fn {k, _} -> k in query_list end) |> Enum.map(fn {_, v} -> v end)
     end
   end
+
+  @doc false
+  defp gen_graphql_methods(nil, _), do: []
+  defp gen_graphql_methods(_params, false), do: []
+
+  defp gen_graphql_methods(params, _) do
+    case Map.get(params, "query")
+      nil ->
+        []
+
+      v ->
+        case QueryParser.parse(v) do
+          {:ok, parsed, _, _, _, _} -> normalize_parsed_result(parsed)
+          _ -> []
+        end
+    end
+  end
+
+  defp normalize_parsed_result(["", m]), do: normalize_parsed_result(["query", m])
+  defp normalize_parsed_result(items), do: Enum.map(items, &Recase.to_snake/1)
 
   @doc false
   defp join_path(path_info, prefix), do: "#{prefix}:/#{Enum.join(path_info, "/")}"
