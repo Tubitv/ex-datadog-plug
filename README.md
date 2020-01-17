@@ -1,5 +1,7 @@
 # ex_datadog_plug
 
+![](https://github.com/Tubitv/ex-datadog-plug/workflows/build/badge.svg) [![](https://img.shields.io/hexpm/v/ex_datadog_plug.svg)](https://hex.pm/packages/ex_datadog_plug) [![](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 A plug for logging response time in datadog. To use it, just plug it into the desired module:
 
 ```elixir
@@ -22,7 +24,7 @@ by adding `ex_datadog_plug` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:ex_datadog_plug, "~> 0.1.0"}]
+  [{:ex_datadog_plug, "~> 0.6.0"}]
 end
 ```
 

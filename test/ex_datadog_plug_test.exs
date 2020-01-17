@@ -69,4 +69,43 @@ defmodule ExDatadogPlugTest do
 
     assert called(Statix.histogram("hello.response_time", :_, tags: ["route:/", "version:v1"]))
   end
+
+  test_with_mock "check graphql method extraction", Statix, histogram: fn _, _, _ -> :ok end do
+    body = %{
+      "operationName" => nil,
+      "query" => "mutation {\n  updateUser {\n    code\n    }\n}",
+      "variables" => nil
+    }
+
+    :post
+    |> conn("/graphql", body)
+    |> ExDatadog.Plug.call(graphql_method: true)
+    |> send_resp(200, "Hello world")
+
+    assert called(
+             Statix.histogram("plug.response_time", :_,
+               tags: ["route:/graphql", "mutation", "update_user"]
+             )
+           )
+  end
+
+  test_with_mock "check graphql method extraction with query omitted", Statix,
+    histogram: fn _, _, _ -> :ok end do
+    body = %{
+      "operationName" => nil,
+      "query" => "{\n  getUser {\n    code\n    }\n}",
+      "variables" => nil
+    }
+
+    :post
+    |> conn("/graphql", body)
+    |> ExDatadog.Plug.call(graphql_method: true)
+    |> send_resp(200, "Hello world")
+
+    assert called(
+             Statix.histogram("plug.response_time", :_,
+               tags: ["route:/graphql", "query", "get_user"]
+             )
+           )
+  end
 end
