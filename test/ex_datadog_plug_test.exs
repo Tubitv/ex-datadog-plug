@@ -21,7 +21,9 @@ defmodule ExDatadogPlugTest do
     |> send_resp(200, "Hello world")
 
     assert called(
-             Statix.histogram("plug.response_time", :_, tags: ["route:/hello/world", "POST"])
+             Statix.histogram("plug.response_time", :_,
+               tags: ["route:/hello/world", "method:POST"]
+             )
            )
   end
 
@@ -35,7 +37,7 @@ defmodule ExDatadogPlugTest do
              Statix.histogram(
                "plug.response_time",
                :_,
-               tags: ["route:/hello/world", "GET", "args:a,b,1,2", "bar:10"]
+               tags: ["route:/hello/world", "method:GET", "args:a,b,1,2", "bar:10"]
              )
            )
   end
@@ -50,7 +52,7 @@ defmodule ExDatadogPlugTest do
              Statix.histogram(
                "hello.response_time",
                :_,
-               tags: ["route:/", "path:/", "PATCH", "args:a,b,1,2", "bar:10", "foo:abcd"]
+               tags: ["route:/", "path:/", "method:PATCH", "args:a,b,1,2", "bar:10", "foo:abcd"]
              )
            )
   end

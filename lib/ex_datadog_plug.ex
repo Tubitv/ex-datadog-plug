@@ -83,7 +83,7 @@ defmodule ExDatadog.Plug do
 
   @doc false
   defp gen_method_tags(_method, false), do: []
-  defp gen_method_tags(method, true), do: [method]
+  defp gen_method_tags(method, true), do: ["method:#{method}"]
 
   @doc false
   defp gen_query_tags(_query_string, nil), do: []
